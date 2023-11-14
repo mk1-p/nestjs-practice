@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PostsEntity } from "./posts/entities/posts.entity";
 
 /**
  * nest g [package-name] 으로 생성하는 경우
@@ -13,7 +15,20 @@ import { PostsModule } from './posts/posts.module';
  * main.js(NestFactory AppModule) -> AppModule imports -> Each Module
  */
 @Module({
-  imports: [PostsModule],
+  imports: [
+    PostsModule,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: '127.0.0.1',
+      username: 'postgres',
+      password: 'postgres',
+      database: 'postgres_db',
+      entities: [
+        PostsEntity,
+      ], // 데이터베이스와 연동될 모델들을 입력하는 공간
+      synchronize: true, // 작성한 엔티티와 DB의 싱크를 맞출것인가? (JPA의 ddl-auto 와 유사)
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
