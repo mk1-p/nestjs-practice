@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    volumes:
+      # OS Location : Container Location
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      # OS Port : Container Port
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres_db
+      POSTGRES_ROOT_PASSWORD: root
