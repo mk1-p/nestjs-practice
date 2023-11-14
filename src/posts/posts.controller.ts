@@ -38,41 +38,28 @@ export class PostsController {
 
   @Get()
   getPosts() {
-    return posts;
+    return this.postsService.getAllPosts();
   }
 
   @Get(':id')
-  getPost(@Param('id') id: string): PostModelDto {
-    const post = posts.find((post) => post.id === +id);
-    if (!post) {
-      throw new NotFoundException();
-    }
-    return post;
+  getPost(@Param('id') id: number): PostModelDto {
+    return this.postsService.getPostById(id);
   }
 
   @Post()
   @Header('content-type', 'application/json; charset=utf-8')
   createPost(@Body() post: PostModelDto) {
-    const id = posts[posts.length - 1].id + 1;
-    post.id = id;
-    posts = [...posts, post];
-    return post;
+    return this.postsService.createPost(post);
   }
 
   @Put(':id')
   @Header('content-type', 'application/json; charset=utf-8')
-  updatePost(@Param('id') id: number, @Body() req: PostModelDto) {
-    const post = posts.find((post) => post.id === +id);
-    if (!post) {
-      throw new NotFoundException();
-    }
-    post.updatePost(req);
-    return post;
+  updatePost(@Param('id') id: number, @Body() post: PostModelDto) {
+    return this.postsService.updatePost(id, post);
   }
 
   @Delete(':id')
   deletePost(@Param('id') id: number) {
-    console.log(id);
-    posts = posts.filter((post) => post.id !== id);
+    this.postsService.deletePost(id);
   }
 }
