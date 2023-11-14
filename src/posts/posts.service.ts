@@ -32,7 +32,7 @@ let posts: PostModelDto[] = [
     .build(),
 ];
 
-@Injectable()
+@Injectable() // 주입 가능하도록 하는 데코레이션
 export class PostsService {
   getAllPosts() {
     return posts;

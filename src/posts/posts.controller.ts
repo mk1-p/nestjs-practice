@@ -4,7 +4,7 @@ import { PostModelDto } from './post-model.dto';
 
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(private readonly postsService: PostsService) {} // 의존성 주입 구간
 
   @Get()
   getPosts() {
