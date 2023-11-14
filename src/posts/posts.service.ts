@@ -1,6 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PostModelDto } from "./post-model.dto";
 import { Builder } from "builder-pattern";
+import { Repository } from "typeorm";
+import { PostsEntity } from "./entities/posts.entity";
+import { InjectRepository } from "@nestjs/typeorm";
 
 
 // 레포지토리 대용 임시 메모리 데이터
@@ -34,6 +37,11 @@ let posts: PostModelDto[] = [
 
 @Injectable() // 주입 가능하도록 하는 데코레이션
 export class PostsService {
+  constructor(
+    @InjectRepository(PostsEntity) // Repository 의존성 주입
+    private readonly postsRepository: Repository<PostsEntity>
+  ) {}
+
   getAllPosts() {
     return posts;
   }
