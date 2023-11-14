@@ -1,6 +1,6 @@
 import { IsInt, IsNotEmpty, IsOptional } from "class-validator";
 
-export class PostModelDto {
+export class PostsDto {
 
   @IsInt()
   @IsOptional()
@@ -27,7 +27,7 @@ export class PostModelDto {
     this.commentCount = commentCount;
   }
 
-  updatePost(post: PostModelDto) {
+  updatePost(post: PostsDto) {
     this.author = post.author !== null ? post.author : this.author;
     this.title = post.title !== null ? post.title : this.title;
     this.content = post.content !== null ? post.content : this.content;

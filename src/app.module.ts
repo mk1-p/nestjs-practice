@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PostsEntity } from "./posts/entities/posts.entity";
+import { PostsModel } from "./posts/entities/posts.entity";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
 /**
@@ -25,7 +25,7 @@ import { SnakeNamingStrategy } from "typeorm-naming-strategies";
       password: 'postgres',
       database: 'postgres_db',
       entities: [
-        PostsEntity,
+        PostsModel,
       ], // 데이터베이스와 연동될 모델들을 입력하는 공간
       synchronize: true, // 작성한 엔티티와 DB의 싱크를 맞출것인가? (JPA의 ddl-auto 와 유사)
       namingStrategy: new SnakeNamingStrategy(), // 컬럼의 네이밍을 Snake Case로 변환

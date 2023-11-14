@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { PostModelDto } from "./post-model.dto";
+import { PostsDto } from "./posts.dto";
 import { Builder } from "builder-pattern";
 import { Repository } from "typeorm";
-import { PostsEntity } from "./entities/posts.entity";
+import { PostsModel } from "./entities/posts.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 
 
 // 레포지토리 대용 임시 메모리 데이터
-let posts: PostModelDto[] = [
+let posts: PostsDto[] = [
   // builder-pattern 적용 해보기
-  Builder(PostModelDto)
+  Builder(PostsDto)
     .id(1)
     .author("newjeans_official")
     .title("뉴진스 민지")
@@ -17,7 +17,7 @@ let posts: PostModelDto[] = [
     .likeCount(1000)
     .commentCount(999999)
     .build(),
-  Builder(PostModelDto)
+  Builder(PostsDto)
     .id(2)
     .author("newjeans_official")
     .title("뉴진스 혜린")
@@ -25,7 +25,7 @@ let posts: PostModelDto[] = [
     .likeCount(1000)
     .commentCount(999999)
     .build(),
-  Builder(PostModelDto)
+  Builder(PostsDto)
     .id(3)
     .author("blackpink_official")
     .title("블랙핑크 로제")
@@ -38,8 +38,8 @@ let posts: PostModelDto[] = [
 @Injectable() // 주입 가능하도록 하는 데코레이션
 export class PostsService {
   constructor(
-    @InjectRepository(PostsEntity) // Repository 의존성 주입
-    private readonly postsRepository: Repository<PostsEntity>
+    @InjectRepository(PostsModel) // Repository 의존성 주입
+    private readonly postsRepository: Repository<PostsModel>
   ) {}
 
   getAllPosts() {
@@ -54,7 +54,7 @@ export class PostsService {
     return post;
   }
 
-  createPost(post: PostModelDto) {
+  createPost(post: PostsDto) {
     const id = posts[posts.length - 1].id + 1;
     post.id = id;
     posts = [...posts, post];
@@ -62,7 +62,7 @@ export class PostsService {
     return post;
   }
 
-  updatePost(id: number, post: PostModelDto) {
+  updatePost(id: number, post: PostsDto) {
     const findPost = posts.find((post) => post.id === id);
     if (!findPost) {
       throw new NotFoundException();
