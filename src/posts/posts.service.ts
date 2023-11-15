@@ -1,39 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PostsDto } from "./posts.dto";
-import { Builder } from "builder-pattern";
 import { Repository } from "typeorm";
 import { PostsModel } from "./entities/posts.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-
-
-// 레포지토리 대용 임시 메모리 데이터
-let posts: PostsDto[] = [
-  // builder-pattern 적용 해보기
-  Builder(PostsDto)
-    .id(1)
-    .author("newjeans_official")
-    .title("뉴진스 민지")
-    .content("메이크업 고치고 있는 민지")
-    .likeCount(1000)
-    .commentCount(999999)
-    .build(),
-  Builder(PostsDto)
-    .id(2)
-    .author("newjeans_official")
-    .title("뉴진스 혜린")
-    .content("노래 연습하고 있는 혜린")
-    .likeCount(1000)
-    .commentCount(999999)
-    .build(),
-  Builder(PostsDto)
-    .id(3)
-    .author("blackpink_official")
-    .title("블랙핑크 로제")
-    .content("공연 연습하고 있는 로제")
-    .likeCount(1000)
-    .commentCount(999999)
-    .build(),
-];
 
 @Injectable() // 주입 가능하도록 하는 데코레이션
 export class PostsService {
@@ -42,36 +11,74 @@ export class PostsService {
     private readonly postsRepository: Repository<PostsModel>
   ) {}
 
-  getAllPosts() {
-    return posts;
+  async getAllPosts() {
+    return this.postsRepository.find();
   }
 
-  getPostById(id: number) {
-    const post = posts.find((post) => post.id === id);
+  async getPostById(id: number) {
+    const post = await this.postsRepository.findOne({
+      where: {
+        id: id, // 키값과 동일한 명칭인 경우 생략 가능!
+      }
+    });
+
     if (!post) {
       throw new NotFoundException();
     }
     return post;
   }
 
-  createPost(post: PostsDto) {
-    const id = posts[posts.length - 1].id + 1;
-    post.id = id;
-    posts = [...posts, post];
+  async createPost(postsDto: PostsDto) {
+    // create로 엔티티 생성,
+    // save로 저장
+    const post = this.postsRepository.create({
+      author: postsDto.author,
+      title: postsDto.title,
+      content: postsDto.content,
+      likeCount: 0,
+      commentCount: 0,
+    });
 
-    return post;
+    const newPost = await this.postsRepository.save(post);
+
+    return newPost;
   }
 
-  updatePost(id: number, post: PostsDto) {
-    const findPost = posts.find((post) => post.id === id);
-    if (!findPost) {
+  async updatePost(id: number, postsDto: PostsDto) {
+    // save 기능
+    // 1) 데이터가 존재하지 않는 경우(PK 기준) 새로 생성
+    // 2) 데이터가 존재하는 경우(PK 기준) 업데이트
+    const post = await this.postsRepository.findOne({
+      where: {
+        id: id,
+      }
+    });
+
+    // 데이터가 없는 경우, 에러 반환
+    if (!post) {
       throw new NotFoundException();
     }
-    findPost.updatePost(post);
-    return findPost;
+
+    post.author = postsDto.author !== null ? postsDto.author : post.author;
+    post.title = postsDto.title !== null ? postsDto.title : post.title;
+    post.content = postsDto.content !== null ? postsDto.content : post.content;
+
+    // Spring JPA의 영속성과는 다른가??
+    const newPost = await this.postsRepository.save(post);
+
+    return newPost;
+
   }
 
-  deletePost(id: number) {
-    posts = posts.filter((post) => post.id !== id);
+  async deletePost(id: number) {
+    const post = await this.postsRepository.findOne({
+      where: {
+        id: id,
+      }
+    });
+    if (!post) {
+      throw new NotFoundException();
+    }
+    await this.postsRepository.delete(id);
   }
 }
